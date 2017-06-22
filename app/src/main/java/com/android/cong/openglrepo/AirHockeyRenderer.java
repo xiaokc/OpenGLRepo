@@ -7,6 +7,8 @@ import static android.opengl.GLES20.GL_TRIANGLE_FAN;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
+import static android.opengl.GLES20.glGetUniformLocation;
+import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
@@ -23,6 +25,8 @@ import com.android.cong.openglrepo.util.TextResourceReader;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
 
 /**
  * Created by xiaokecong on 20/06/2017.
@@ -43,6 +47,10 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
     private static final int COLOR_COMPONENT_COUNT = 3;
     private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT;
     private int aColorPosition;
+
+    private static final String U_MATRIX = "u_Matrix";
+    private final float[] projectionMatrix = new float[16]; // 4*4 投影矩阵
+    private int uMatrixLocation;
 
     public AirHockeyRenderer(Context context) {
         this.context = context;
@@ -91,6 +99,7 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
         glUseProgram(program);
 
         aColorPosition = glGetAttribLocation(program, A_COLOR);
+        uMatrixLocation = glGetUniformLocation(program, U_MATRIX);
         aPositionLocation = glGetAttribLocation(program, A_POSITION);
 
         vertexData.position(0);
@@ -105,12 +114,26 @@ public class AirHockeyRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        gl.glViewport(0, 0, width, height);
+//        gl.glViewport(0, 0, width, height);
+
+        Log.i("===>xkc", "width=" + width + ",height=" + height);
+
+        final float aspectRatio = width > height ? (float) width / (float) height : (float) height / (float) width;
+        if (width > height) {
+            // landscape
+            Matrix.orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f);
+        } else {
+            // portrait or squre
+            Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f);
+        }
+
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+        glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0);
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
 
