@@ -22,6 +22,8 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
 
     private float[] mRotationMatrix = new float[16];
 
+    private volatile float mAngle;
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Set the background frame color
@@ -60,9 +62,9 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         // Create a rotation transformation for the triangle
-        long time = SystemClock.uptimeMillis() % 4000L;
-        float angle = 0.09f * ((int) time);
-        Matrix.setRotateM(mRotationMatrix, 0, angle, 0f, 0f, -1f);
+//        long time = SystemClock.uptimeMillis() % 4000L;
+//        float angle = 0.09f * ((int) time);
+        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0f, 0f, -1f);
 
         // Combine the rotation matrix with the projection and camera view
         // Note that the mMVPMatrix factor *must be first* in order
@@ -70,5 +72,13 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
 
         mTriangle.draw(scratch);
+    }
+
+    public void setAngle(float angle){
+        this.mAngle = angle;
+    }
+
+    public float getAngle() {
+        return mAngle;
     }
 }
