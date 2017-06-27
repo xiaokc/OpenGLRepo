@@ -8,19 +8,19 @@ import android.view.MotionEvent;
  * Created by xiaokecong on 27/06/2017.
  */
 
-public class TextureImageGLSurfaceView extends GLSurfaceView {
-    private final TextureImageRenderer mRenderer;
+public class ImageGLSurfaceView extends GLSurfaceView {
+    private final ImageRenderer mRenderer;
     private float mPreviousX;
     private float mPreviousY;
     private final float TOUCH_SCALE_FACTOR = 180.0f / 320;
 
-    public TextureImageGLSurfaceView(Context context) {
+    public ImageGLSurfaceView(Context context) {
         super(context);
 
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2);
 
-        mRenderer = new TextureImageRenderer();
+        mRenderer = new ImageRenderer();
 
         setRenderer(mRenderer);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);

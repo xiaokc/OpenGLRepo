@@ -9,13 +9,13 @@ import android.support.annotation.Nullable;
  * Created by xiaokecong on 27/06/2017.
  */
 
-public class TextureImageActivity extends Activity {
+public class ImageActivity extends Activity {
     private GLSurfaceView mGLView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mGLView = new TextureImageGLSurfaceView(this);
+        mGLView = new ImageGLSurfaceView(this);
         setContentView(mGLView);
     }
 }

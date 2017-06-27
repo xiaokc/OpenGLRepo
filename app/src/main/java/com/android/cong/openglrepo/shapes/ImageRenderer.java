@@ -12,7 +12,7 @@ import android.os.SystemClock;
  * Created by xiaokecong on 27/06/2017.
  */
 
-public class TextureImageRenderer implements GLSurfaceView.Renderer {
+public class ImageRenderer implements GLSurfaceView.Renderer {
     private Triangle mTriangle;
     private Square mSquare;
 
