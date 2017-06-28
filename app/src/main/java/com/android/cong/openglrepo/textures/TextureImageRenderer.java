@@ -17,6 +17,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 
 /**
  * Created by xiaokecong on 27/06/2017.
@@ -39,6 +40,9 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
     private final float[] mtrxProjection = new float[16];
     private final float[] mtrxView = new float[16];
     private final float[] mtrxProjectionAndView = new float[16];
+    private final float[] mRotationMatrix = new float[16];
+
+    private final float[] mScratchMatrix = new float[16];
 
     public TextureImageRenderer(Context context) {
         this.mContext = context;
@@ -55,16 +59,16 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0f, 0f, 0f, 1f);
 
         // Create the shaders, solid color
-        int vertexShader = Utils.loadShader(GLES20.GL_VERTEX_SHADER, Utils.vs_SolidColor);
-        int fragmentShader = Utils.loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.fs_SolidColor);
+        //        int vertexShader = Utils.loadShader(GLES20.GL_VERTEX_SHADER, Utils.vs_SolidColor);
+        //        int fragmentShader = Utils.loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.fs_SolidColor);
+        //
+        //        Utils.sp_SolidColor = GLES20.glCreateProgram();
+        //        GLES20.glAttachShader(Utils.sp_SolidColor, vertexShader);
+        //        GLES20.glAttachShader(Utils.sp_SolidColor, fragmentShader);
+        //        GLES20.glLinkProgram(Utils.sp_SolidColor);
 
-        Utils.sp_SolidColor = GLES20.glCreateProgram();
-        GLES20.glAttachShader(Utils.sp_SolidColor, vertexShader);
-        GLES20.glAttachShader(Utils.sp_SolidColor, fragmentShader);
-        GLES20.glLinkProgram(Utils.sp_SolidColor);
-
-        vertexShader = Utils.loadShader(GLES20.GL_VERTEX_SHADER, Utils.vs_Image);
-        fragmentShader = Utils.loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.fs_Image);
+        int vertexShader = Utils.loadShader(GLES20.GL_VERTEX_SHADER, Utils.vs_Image);
+        int fragmentShader = Utils.loadShader(GLES20.GL_FRAGMENT_SHADER, Utils.fs_Image);
 
         Utils.sp_Image = GLES20.glCreateProgram();
         GLES20.glAttachShader(Utils.sp_Image, vertexShader);
@@ -84,11 +88,6 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
         float ratio = (float) width / height;
         Matrix.frustumM(mtrxProjection, 0, -ratio, ratio, -1f, 1f, 3f, 7f);
 
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(mtrxView, 0, 0f, 0f, 3f, 0f, 0f, 0f, 0f, 1f, 0f);
-
-        // Calculate the projection and view transformation
-        Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
 
     }
 
@@ -105,8 +104,20 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
 
         // Update our example
 
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(mtrxView, 0, 0f, 0f, 3f, 0f, 0f, 0f, 0f, 1f, 0f);
+
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
+
+        long time = SystemClock.uptimeMillis() % 4000L;
+        float angle = 0.09f * ((int) time);
+        Matrix.setRotateM(mRotationMatrix, 0, angle, 0f, 0f, -1f);
+
+        Matrix.multiplyMM(mScratchMatrix, 0, mtrxProjectionAndView, 0, mRotationMatrix,0);
+
         // Render our example
-        render(mtrxProjectionAndView);
+        render(mScratchMatrix);
 
         // Save the current time to see how long it took :).
         mLastTime = now;
