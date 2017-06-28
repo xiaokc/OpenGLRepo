@@ -80,10 +80,12 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
 
         // Setup our screen width and height for normal sprite translation.
-        Matrix.orthoM(mtrxProjection, 0, 0f, width, 0f, height, 0f, 50f);
+        // Matrix.orthoM(mtrxProjection, 0, 0f, width, 0f, height, 3f, 7f);
+        float ratio = (float) width / height;
+        Matrix.frustumM(mtrxProjection, 0, -ratio, ratio, -1f, 1f, 3f, 7f);
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mtrxView, 0, 0f, 0f, 10f, 0f, 0f, 0f, 0f, 1f, 0f);
+        Matrix.setLookAtM(mtrxView, 0, 0f, 0f, 3f, 0f, 0f, 0f, 0f, 1f, 0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mtrxProjectionAndView, 0, mtrxProjection, 0, mtrxView, 0);
@@ -147,10 +149,10 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
 
     private void setUpTriangle() {
         vertices = new float[] {
-                10.0f, 200f, 0.0f,
-                10.0f, 100f, 0.0f,
-                100f, 100f, 0.0f,
-                100f, 200f, 0.0f,
+                -1f, 1f, 0.0f,
+                -1f, -1f, 0.0f,
+                1f, -1f, 0.0f,
+                1f, 1f, 0.0f,
         };
 
         indices = new short[] {0, 1, 2, 0, 2, 3}; // The order of vertex rendering.
@@ -186,7 +188,7 @@ public class TextureImageRenderer implements GLSurfaceView.Renderer {
         int[] textureids = new int[1];
         GLES20.glGenTextures(1, textureids, 0);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.air_hockey_surface_low_res);
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.air_hockey_surface);
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureids[0]);
