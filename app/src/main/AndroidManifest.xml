@@ -19,6 +19,9 @@
         </activity>
 
         <activity android:name=".shapes.ImageActivity">
+
+        </activity>
+        <activity android:name=".textures.TextureImageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
